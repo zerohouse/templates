@@ -1,0 +1,35 @@
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME}
+
+#end
+#parse("File Header.java")
+
+import com.zerohouse.tables.IdTable
+import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import javax.persistence.Entity
+import javax.persistence.EntityManager
+
+@Entity
+class ${NAME} : IdTable() {
+}
+
+#set($name = ${NAME})
+#set($smallerName = $name.toLowerCase())
+
+@RestController    
+@RequestMapping
+class ${NAME}Controller(val ${smallerName}Service: ${NAME}Service) {
+}
+    
+@Service
+class ${NAME}Service(
+        val entityManager: EntityManager,
+        val ${smallerName}Repository: ${NAME}Repository) {
+}
+    
+    
+@Repository
+interface ${NAME}Repository : CrudRepository<${NAME}, Long> 

@@ -1,6 +1,6 @@
 
 1. ng serlverless toolkit add
-2. serverless profile 등록 serverless config credentials --provider aws --key AKIAJR3J26RWALX7KURQ --secret 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 --profile custom-profile
+2. serverless profile 등록 serverless config credentials --provider aws --key 키 --secret 시크릿 --profile custom-profile
 3.  serverless.yml
   - profile 설정
   - 지역 변경

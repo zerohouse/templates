@@ -1,0 +1,17 @@
+
+1. ng serlverless toolkit add
+2. serverless profile 등록 serverless config credentials --provider aws --key AKIAJR3J26RWALX7KURQ --secret 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 --profile custom-profile
+3.  serverless.yml
+  - profile 설정
+  - 지역 변경
+  - node version 변경
+4. package.json
+   - webpack-cli 버전 최신화
+5. server.ts 프록시 추가
+import * as proxy from 'http-proxy-middleware';
+
+const apiProxy = proxy('/api', {target: 'http://localhost:8080'});
+app.use('/api', apiProxy);
+
+6. localstorage, alert등 global 변수 inject
+

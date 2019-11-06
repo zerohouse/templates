@@ -3,31 +3,71 @@
 #end
 #parse("File Header.java")
 
+import com.querydsl.jpa.impl.JPAQuery
 import com.zerohouse.tables.IdTable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.persistence.Entity
-import javax.persistence.EntityManager
 
 @Entity
 class ${NAME} : IdTable() {
 }
 
 #set($name = ${NAME})
-#set($smallerName = $name.toLowerCase())
+#set($smallerName = ${name.substring(0,1).toLowerCase()}+${name.substring(1)})
 
-@RestController    
-@RequestMapping
+@RestController
+@RequestMapping("/${smallerName}")
 class ${NAME}Controller(val ${smallerName}Service: ${NAME}Service) {
-}
+
+    @GetMapping("/list")
+    fun get${NAME}List(@RequestParam(defaultValue = "0") page: Int, @RequestParam(defaultValue = "10") size: Int): Page<${NAME}> {
+        return ${smallerName}Service.get${NAME}List(PageRequest.of(page, size))
+    }
+
+    @GetMapping
+    fun get${NAME}(@RequestParam id: Long): ${NAME} {
+        return ${smallerName}Service.get${NAME}(id)
+    }
+
+    @PostMapping
+    fun save${NAME}(@RequestBody ${smallerName}: ${NAME}): ${NAME} {
+        return ${smallerName}Service.save${NAME}(${smallerName})
+    }
     
+    @DeleteMapping
+    fun delete${NAME}(@RequestParam id: Long) {
+        return ${smallerName}Service.delete${NAME}(id)
+    }
+}
+
 @Service
 class ${NAME}Service(
-        val entityManager: EntityManager,
-        val ${smallerName}Repository: ${NAME}Repository) {
+        val ${smallerName}Repository: ${NAME}Repository) : QuerydslRepositorySupport(${NAME}::class.java) {
+    fun get${NAME}(id: Long): ${NAME} {
+        return this.${smallerName}Repository.findById(id).orElseThrow {
+            RuntimeException()
+        }
+    }
+
+    fun save${NAME}(${smallerName}: ${NAME}) : ${NAME} {
+        return ${smallerName}Repository.save(${smallerName})
+    }
+
+    fun get${NAME}List(pageable: PageRequest): Page<${NAME}> {
+        val query = JPAQuery<${NAME}>(entityManager).from(Q${NAME}.${smallerName}).orderBy(Q${NAME}.${smallerName}.id.desc())
+        return PageImpl(querydsl!!.applyPagination(pageable, query).fetch(), pageable, query.fetchCount())
+    }
+    
+    fun delete${NAME}(id: Long) {
+        ${smallerName}Repository.deleteById(id)
+    }
 }
     
     
